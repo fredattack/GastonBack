@@ -8,13 +8,13 @@ use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 
 Route::prefix('v1-0-0')->middleware([
     EnsureFrontendRequestsAreStateful::class,
-    'auth:sanctum',
+//    'auth:sanctum',
 ])->group(function () {
     Route::resource('/pets', PetController::class)->only([
         'index', 'show', 'store', 'update', 'destroy',
     ]);
 
-    Route::get('/for-calendar', [EventController::class, 'getForCalendar']);
+    Route::get('/events/for-calendar', [EventController::class, 'getForCalendar']);
     Route::resource('/events', EventController::class)->only([
         'index', 'show', 'store', 'update', 'destroy',
     ]);

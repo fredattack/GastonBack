@@ -40,7 +40,6 @@ class EventController extends Controller
 
     public function getForCalendar()
     {
-       dd('getForCalendar');
 
         if(!request()->has('filters')) {
             abort( 400, 'Filters are required' );
