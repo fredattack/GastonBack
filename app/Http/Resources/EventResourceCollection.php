@@ -11,11 +11,16 @@ class EventResourceCollection extends ResourceCollection
      * Transform the resource collection into an array.
      *
      * @param  Request  $request
-     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     * @return array<string, mixed>
      */
-    public function toArray($request)
+    public function toArray($request): array
     {
-        return EventResource::collection($this->collection);
-
+        return [
+            'data' => EventResource::collection($this->collection),
+            'meta' => [
+                'total' => $this->collection->count(),
+                'generated_at' => now()->toIso8601String(),
+            ],
+        ];
     }
 }

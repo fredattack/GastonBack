@@ -9,18 +9,19 @@ namespace App\Filters\EventFilters;
     class StartDateFilter
 {
 
-    public function __construct(protected $date)
+    public function __construct(protected array $filters)
     {
 
     }
 
     public function __invoke(Builder $query)
     {
-        if(!$this->date) {
+        if (!isset($this->filters['start_date']) || !isset($this->filters['end_date'])) {
             return $query;
         }
+
         //start_date is equal of after date
-        return $query->where( 'start_date', '>=', $this->date );
+        return $query->whereBetween( 'start_date', [$this->filters['start_date'], $this->filters['end_date']] );
     }
 }
 

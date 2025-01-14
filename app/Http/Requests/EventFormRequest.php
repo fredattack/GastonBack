@@ -31,7 +31,7 @@ class EventFormRequest extends FormRequest
             'recurrence.frequency_type'      => 'required_if:is_recurring,true|string|in:daily,weekly,monthly',
             'recurrence.frequency'           => 'required_if:is_recurring,true|integer|min:1',
             'recurrence.end_date' => 'nullable|date|after_or_equal:start_date',
-            'recurrence.occurences'          => 'nullable|integer|min:1',
+            'recurrence.occurences'          => 'nullable|integer',
             'recurrence.days'                => 'nullable|array',
             'recurrence.days.*'              => 'string|in:monday,tuesday,wednesday,thursday,friday,saturday,sunday',
         ];

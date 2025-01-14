@@ -39,8 +39,8 @@ class Event extends Model
     protected $casts = [
         'is_full_day' => 'boolean',
         'is_recurring' => 'boolean',
-        'start_date' => 'date',
-        'end_date' => 'date',
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
     ];
 
     public function recurrence() {
@@ -52,7 +52,7 @@ class Event extends Model
 
     public static function filter()
     {
-        return app(EventFilterPipeline::class, ['filters' => request()->all()['params'] ?? []])
+        return app(EventFilterPipeline::class, ['filters' => request()->all()['filters'] ?? []])
             ->send(self::query())
             ->thenReturn();
     }

@@ -10,19 +10,18 @@ class ConsumeAiService
 {
     public function consumeAi($prompt)
     {
-
         $superPrompt = $this->getSuperPrompt();
         $message = [
             ['role' => 'developer', 'content' => $superPrompt],
             ['role' => 'user', 'content' => $prompt],
         ];
-        ray( $message );
+
         $result = OpenAI::chat()->create( [
             'model' => 'gpt-3.5-turbo',
             'messages' => $message,
         ] );
 
-        return $result->choices[0]->message->content; // Hello! How can I assist you today?   // Code to consume AI
+        return $result->choices[0]->message->content;
     }
 
     /**
@@ -30,43 +29,9 @@ class ConsumeAiService
      */
     protected function getSuperPrompt(): string
     {
-
-        $eventStructure = [
-            'id' => '',
-            'title' => '',
-            'petId' => '',
-            'type' => "// Exemple : 'medical' | 'feeding' | 'appointment' | ...'",
-            'start_date' => '',
-            'end_date' => '',
-            'is_recurring' => false,
-            'is_full_day' => false,
-            'recurrence' => [
-                'frequency_type' => 'daily',
-                'has_end_recurrence' => false,
-                'end_recurrence_date' => '',
-                'occurences' => '',
-                'frequency' => 1,
-                'days' => []
-            ],
-            'notes' => ''
-        ];
-
-        $petStructure = [
-            'id' => '',
-            'name' => '',
-            'birthDate' => "// Format : 'YYYY-MM-DD'",
-            'breed' => '',
-            'createdAt' => "// Format : 'YYYY-MM-DD hh:ii' (now())",
-            'is_active' => true,
-            'order' => 0,
-            'ownerId' => '',
-            'species' => "// Exemple : 'dog' | 'cat'",
-        ];
-
-        // Combinaison des structures dans la réponse typée
         $typedResponse = [
-            "eventResponse" => $eventStructure,
-            "petResponse" => $petStructure
+            "eventResponse" => $this->getEventStructure(),
+            "petResponse" =>$this->getPetStructure()
         ];
 
         $parameters = [
@@ -74,7 +39,12 @@ class ConsumeAiService
             'today' => now()->format( 'Y-m-d' ),
             'eventType' => EventType::asArray(),
             'pets' => Pet::pluck( 'name', 'id' )->toArray(),
-            'typedResponse' => $typedResponse
+            'typedResponse' => $typedResponse,
+            'timereference'=>[
+                'morning'=>'08:00:00UTC',
+                'midday'=>'13:00:00UTC',
+                'evening'=>'19:00:00UTC',
+            ]
         ];
 
         return json_encode( [
@@ -91,10 +61,54 @@ class ConsumeAiService
                 ]",
                 "If recurrence is mentioned, set isRecurring to true and populate recurrence details.",
                 "If an animal's name is specified, ensure it appears in the title field if present.",
+                "Si un moment de la journee est évoquée choisissez l'heure par rapport parameters.timereference",
                 "response must be a simple object formated by one of the typedResponse structures. ",
                 "respecte le plus possible 'parameters.language' pour la langue de la réponse.",
                 "!!!!! La réponse sera un json brut sans style ou decoration markedown!!!!! "
             ]
         ]);
+    }
+
+    /**
+     * @return array
+     */
+    protected function getPetStructure(): array
+    {
+        $petStructure = [
+            'id' => '',
+            'name' => '',
+            'birthDate' => "// Format : 'YYYY-MM-DD'",
+            'breed' => '',
+            'is_active' => true,
+            'order' => 0,
+            'ownerId' => '',
+            'species' => "// Exemple : 'dog' | 'cat' | 'pig' |",
+        ];
+        return $petStructure;
+    }
+
+    /**
+     * @return array
+     */
+    protected function getEventStructure(): array
+    {
+        return [
+            'id' => '',
+            'title' => 'value as a string and must contain if possiblme the name of the pet',
+            'petId' => 'value as an integer',
+            'type' => "// Exemple : 'medical' | 'feeding' | 'appointment' | ...'",
+            'start_date' => 'value as DateTime',
+            'end_date' => 'value as DateTime || null',
+            'is_recurring' => 'value as boolean',
+            'is_full_day' => 'value as boolean',
+            'recurrence' => [
+                'frequency_type' => 'daily',
+                'end_recurrence_date' => 'value as DD-MM-YYYY hh:ii || null',
+                'occurences' => 'value as an integer || null',
+                'frequency' => 1,
+                'days' => 'value as array of strings Exemple : ["monday", "tuesday"]'
+            ],
+            'notes' => ''
+        ];
     }
 }

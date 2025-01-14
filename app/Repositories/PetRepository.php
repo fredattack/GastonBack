@@ -27,14 +27,15 @@ class PetRepository implements RepositoryInterface
 
     public function update($id, array $data)
     {
-        $pet = $this->find( $id );
+        $pet = Pet::find( $id );
         $pet->update( $data );
         return $pet;
     }
 
     public function delete($id)
     {
-        $pet = $this->find( $id );
+        $pet = Pet::find( $id );
         $pet->delete();
+
     }
 }
