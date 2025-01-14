@@ -12,7 +12,7 @@ class EventRepository implements RepositoryInterface
 
     public function getForPeriodeOrWithRecurrence($periode)
     {
-        return Event::with( 'recurrence' )
+        return Event::with( ['recurrence','pets'] )
             ->where( function($q) use ($periode) {
                 $q->whereBetween( 'start_date', $periode );
             } )->orWhereHas( 'recurrence' )

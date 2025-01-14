@@ -9,7 +9,9 @@ use App\Services\EventService;
 
 class EventController extends Controller
 {
-    public function __construct(public EventService $eventService){}
+    public function __construct(public EventService $eventService){
+
+    }
 
     public function index()
     {
@@ -38,6 +40,8 @@ class EventController extends Controller
 
     public function getForCalendar()
     {
+       dd('getForCalendar');
+
         if(!request()->has('filters')) {
             abort( 400, 'Filters are required' );
         }

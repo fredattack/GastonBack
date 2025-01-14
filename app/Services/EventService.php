@@ -64,9 +64,7 @@ class EventService
             }
 
             if ( $currentDate->between( $startDate, $endDate ) ){
-                ray($currentDate);
                 $startTime = $event->start_date->format('H:i:s');
-                ray( $startTime);
                 $occurrence = clone $event;
                 $occurrence->id = null; // Pour éviter la duplication d'ID
                 $occurrence->master_id = $event->id;
