@@ -8,7 +8,7 @@ class EventFormRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;  // Allow all users, customize if needed
+        return true;
     }
 
     /**
