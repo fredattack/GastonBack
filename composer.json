@@ -8,6 +8,7 @@
     "require": {
         "php": "^8.2",
         "bensampo/laravel-enum": "^6.11",
+        "bugsnag/bugsnag-laravel": "^2.0",
         "filament/filament": "^3.2",
         "laravel/framework": "^11.31",
         "laravel/sanctum": "^4.0",

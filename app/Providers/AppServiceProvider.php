@@ -8,6 +8,7 @@ use Illuminate\Support\ServiceProvider;
 use URL;
 use Vite;
 
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -15,7 +16,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+
     }
 
     /**
