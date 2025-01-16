@@ -17,16 +17,17 @@ class EventResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'petId' => $this->pets?->pluck('id'),
             'title' => $this->title,
-            'isFullDay' => $this->is_full_day,
+            'is_full_day' => $this->is_full_day,
             'type' => $this->type,
-            'startDate' => $this->start_date->toIso8601String(),
-            'endDate' => $this->end_date ? $this->end_date->toIso8601String() : null,
-            'isRecurring' => $this->is_recurring,
+            'start_date' => $this->start_date->toIso8601String(),
+            'end_date' => $this->end_date ? $this->end_date->toIso8601String() : null,
+            'is_recurring' => $this->is_recurring,
             'recurrence' => $this->whenLoaded( 'recurrence', fn() => new RecurrenceResource( $this->recurrence ) ),
             'pets' => PetResource::collection( $this->whenLoaded( 'pets' ) ),
             'notes' => $this->notes,
-            'createdAt' => $this->created_at->toIso8601String(),
+            'created_at' => $this->created_at->toIso8601String(),
         ];
     }
 }

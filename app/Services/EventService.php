@@ -30,16 +30,18 @@ class EventService
             // Ajouter les événements simples dans la période
             if ( $event->start_date->between( $startDate, $endDate ) ){
                 $finalEvents->push( $event );
-            }
+            }else{
+
 
             if ( $event->is_recurring && $event->recurrence ){
                 $finalEvents = $finalEvents->merge(
                     $this->generateRecurrences( $event, $startDate, $endDate )
                 );
             }
+            }
         }
 
-        return new EventResourceCollection( $finalEvents );
+        return new EventResourceCollection( $finalEvents->sortBy( 'start_date' ) );
     }
 
     /**
@@ -53,9 +55,12 @@ class EventService
         /** @var \App\Models\Recurrence $recurrence */
         $currentDate = Carbon::parse( $event->start_date );
         $count = 0;
-
+        ray( $currentDate)->red();
+        ray($endDate)->blue();
         while ( true ) {
-            if ( $recurrence->end_date && $currentDate->gt( Carbon::parse( $recurrence->end_date ) ) ){
+            if ( $currentDate->gt( $endDate ) ){
+                break;
+            } if ( ($recurrence->end_date && $currentDate->gt( Carbon::parse( $recurrence->end_date ) || $currentDate->gt( $endDate ) ))){
                 break;
             }
 
@@ -65,12 +70,21 @@ class EventService
 
             if ( $currentDate->between( $startDate, $endDate ) ){
                 $startTime = $event->start_date->format('H:i:s');
+
                 $occurrence = clone $event;
                 $occurrence->id = null; // Pour éviter la duplication d'ID
                 $occurrence->master_id = $event->id;
+
                 $occurrence->start_date = $currentDate->setTimeFromTimeString( $startTime );
-                $occurrence->end_date = $currentDate->setTimeFrom( $event->end_date );
-                $occurrences->push( $occurrence );
+
+
+                if( $event->end_date ){
+                    $occurrence->end_date = $currentDate->setTimeFrom( $event->end_date );
+                }
+                //if ! $occurences conatin the event
+                if(!$occurrences->where('id', $event->id)->count()){
+                    $occurrences->push( $occurrence );
+                }
             }
 
             $count++;

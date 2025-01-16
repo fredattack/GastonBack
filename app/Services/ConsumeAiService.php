@@ -95,7 +95,7 @@ class ConsumeAiService
         return [
             'id' => '',
             'title' => 'value as a string and must contain if possiblme the name of the pet',
-            'petId' => 'value as an integer',
+            'petId' => 'value as an array of integers based on parameters.pets',
             'type' => "// Exemple : 'medical' | 'feeding' | 'appointment' | ...'",
             'start_date' => 'value as DateTime',
             'end_date' => 'value as DateTime || null',
@@ -104,11 +104,11 @@ class ConsumeAiService
             'recurrence' => [
                 'frequency_type' => 'daily',
                 'end_recurrence_date' => 'value as DD-MM-YYYY hh:ii || null',
-                'occurences' => 'value as an integer || null',
+                'occurrences' => 'value as an integer || null',
                 'frequency' => 1,
                 'days' => 'value as array of strings Exemple : ["monday", "tuesday"]'
             ],
-            'notes' => ''
+            'notes' => 'value as a string it must déscribe synteticaly the details of the event what to do or what to expect.',
         ];
     }
 }
