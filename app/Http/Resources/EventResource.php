@@ -25,7 +25,7 @@ class EventResource extends JsonResource
             'end_date' => $this->end_date ? $this->end_date->toIso8601String() : null,
             'is_recurring' => $this->is_recurring,
             'recurrence' => $this->whenLoaded( 'recurrence', fn() => new RecurrenceResource( $this->recurrence ) ),
-            'pets' => PetResource::collection( $this->whenLoaded( 'pets' ) ),
+            'pets' => $this->whenLoaded( 'pets',PetResource::collection( $this->whenLoaded( 'pets' ) )),
             'notes' => $this->notes,
             'created_at' => $this->created_at->toIso8601String(),
         ];
