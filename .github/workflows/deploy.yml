@@ -31,7 +31,7 @@ jobs:
       - name: 🚢 Deploy to Server via SSH
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-            cd /var/www/gastonapp
+            cd /var/www/gaston-back
             git pull origin master
             docker-compose down
             docker-compose -f docker-compose.prod.yml up -d --build
