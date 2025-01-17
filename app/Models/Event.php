@@ -46,6 +46,12 @@ class Event extends Model
     public function recurrence() {
         return $this->hasOne(Recurrence::class);
     }
+
+    public function occurrences()
+    {
+        return $this->hasMany(EventOccurrence::class);
+    }
+
     public function pets() {
         return $this->belongsToMany(Pet::class);
     }

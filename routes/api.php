@@ -15,6 +15,7 @@ Route::prefix('v1-0-0')->middleware([
     ]);
 
     Route::get('/events/for-calendar', [EventController::class, 'getForCalendar']);
+    Route::post('/events/change-done-status', [EventController::class, 'changeDoneStatus']);
     Route::resource('/events', EventController::class)->only([
         'index', 'show', 'store', 'update', 'destroy',
     ]);
