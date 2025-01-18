@@ -32,7 +32,6 @@ class EventRepository implements RepositoryInterface
 
     public function create(array $data)
     {
-
         $petIds = \Arr::wrap( \Arr::pull( $data, 'petId' ) );
         $recurrence = \Arr::pull( $data, 'recurrence' );
         $event = Event::create( $data );
