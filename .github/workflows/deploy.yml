@@ -34,11 +34,10 @@ jobs:
             cd /var/www/gaston-back
             git stash 
             git pull origin master
-            docker-compose exec app artisan migrate --force
-            docker-compose run --rm artisan config:cache
+            docker-compose exec app php artisan migrate --force
             docker-compose exec app php artisan config:cache
-            docker-compose run --rm artisan route:cache
-            docker-compose run --rm artisan view:cache
+            docker-compose exec app php artisan route:cache
+            docker-compose exec app php artisan view:cache
             docker-compose down
             docker-compose -f docker-compose.prod.yml up -d --build
             docker image prune -f
