@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://localhost:4480','https://api.gaston.pet'],
+    'allowed_origins' => ['http://localhost:4480','https://api.gaston.pet','https://www.gaston.pet'],
 
     'allowed_origins_patterns' => [],
 
