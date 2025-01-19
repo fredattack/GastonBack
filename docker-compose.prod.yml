@@ -7,6 +7,7 @@ services:
     container_name: app
     restart: unless-stopped
     working_dir: /var/www/html
+    entrypoint: ["php", "artisan"]
     volumes:
       - .:/var/www/html
       - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
