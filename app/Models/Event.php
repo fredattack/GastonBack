@@ -53,7 +53,10 @@ class Event extends Model
     }
 
     public function pets() {
-        return $this->belongsToMany(Pet::class);
+        return $this->belongsToMany(Pet::class)
+            ->using(EventPet::class)
+            ->withPivot(['detail_type', 'item', 'quantity', 'notes'])
+            ->withTimestamps();;
     }
 
     public static function filter()

@@ -2,10 +2,14 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\EventType;
 use Illuminate\Foundation\Http\FormRequest;
 
 class EventFormRequest extends FormRequest
 {
+    private const ALLOWED_TYPES = ['medical', 'feeding', 'appointment', 'training', 'social'];
+
+
     public function authorize(): bool
     {
         return true;
@@ -16,10 +20,12 @@ class EventFormRequest extends FormRequest
      */
     public function rules(): array
     {
+        $petIdRules = 'required_if:type,!medical,!feeding|nullable|exists:pets,id';
+
         return [
             'title'              => 'required|string|max:255',
-            'petId'              => 'required|exists:pets,id',
-            'type'               => 'required|string|in:medical,feeding,appointment,training,social',
+            'petId'              => $petIdRules,
+            'type'               => 'required|string|in:' . implode(',', EventType::asArray()),
             'start_date'         => 'required|date|after_or_equal:today',
             'end_date'           => 'nullable|date|after_or_equal:start_date',
             'is_recurring'       => 'required|boolean',
@@ -34,6 +40,12 @@ class EventFormRequest extends FormRequest
             'recurrence.occurrences'          => 'nullable|integer',
             'recurrence.days'                => 'nullable|array',
             'recurrence.days.*'              => 'string|in:monday,tuesday,wednesday,thursday,friday,saturday,sunday',
+
+            'pets_details' => 'nullable|array',
+            'pets_details.*.pet_id' => 'required|integer|exists:pets,id',
+            'pets_details.*.item' => 'required|string|max:255',
+            'pets_details.*.quantity' => 'required|string|max:255',
+            'pets_details.*.notes' => 'nullable|string|max:1000',
         ];
     }
 

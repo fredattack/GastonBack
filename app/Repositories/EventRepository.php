@@ -12,7 +12,7 @@ class EventRepository implements RepositoryInterface
 
     public function getForPeriodeOrWithRecurrence($periode)
     {
-        return Event::with( ['recurrence','pets','occurrences'] )
+        return Event::with( ['recurrence', 'pets', 'occurrences'] )
             ->where( function($q) use ($periode) {
                 $q->whereBetween( 'start_date', $periode );
             } )->orWhereHas( 'recurrence' )
@@ -34,13 +34,33 @@ class EventRepository implements RepositoryInterface
     {
         $petIds = \Arr::wrap( \Arr::pull( $data, 'petId' ) );
         $recurrence = \Arr::pull( $data, 'recurrence' );
+        $petsDetails = \Arr::pull( $data, 'pets_details' );
+
         $event = Event::create( $data );
 
         if ( $data['is_recurring'] && $recurrence ){
             $event->recurrence()->create( $recurrence );
         }
-        $event->pets()->attach( $petIds );
+
+        foreach ( $petsDetails as $petDetail ) {
+            $formattedPetsDetails[$petDetail['pet_id']] = [
+                'detail_type' => $data['type'] == 'medical' ? 'medic' : 'food',
+                'item' => $petDetail['item'],
+                'quantity' => $petDetail['quantity'],
+                'notes' => $petDetail['notes']
+            ];
+        }
+
+        if ( isset( $formattedPetsDetails ) ){
+            ray('in if');
+            $event->pets()->attach( $formattedPetsDetails );
+        } else {
+            ray('in else');
+            $event->pets()->attach( $petIds );
+        }
+
         $event->load( ['recurrence', 'pets'] );
+
         return $event;
     }
 

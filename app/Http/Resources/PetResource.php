@@ -26,6 +26,14 @@ class PetResource extends JsonResource
             'ownerId'    => $this->owner_id,
             'photo'      => '$this->photo',
             'galerie'    => 'json_decode($this->galerie, true) ?? []',
+            'pivot' => $this->when(isset($this->pivot), function () {
+                return [
+                    'detail_type' => $this->pivot->detail_type ?? null,
+                    'item' => $this->pivot->item ?? null,
+                    'quantity' => $this->pivot->quantity ?? null,
+                    'notes' => $this->pivot->notes ?? null,
+                ];
+            }),
             'createdAt'  => $this->created_at->toIso8601String(),
             'updatedAt'  => $this->created_at->toIso8601String(),
         ];
