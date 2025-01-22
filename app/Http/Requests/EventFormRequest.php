@@ -34,18 +34,18 @@ class EventFormRequest extends FormRequest
 
             // Nested recurrence validation
             'recurrence'                     => 'nullable|array',
-            'recurrence.frequency_type'      => 'required_if:is_recurring,true|string|in:daily,weekly,monthly',
-            'recurrence.frequency'           => 'required_if:is_recurring,true|integer|min:1',
+            'recurrence.frequency_type'      => 'required_if:is_recurring,true|nullable|string|in:daily,weekly,monthly',
+            'recurrence.frequency'           => 'required_if:is_recurring,true|nullable|integer|min:1',
             'recurrence.end_date' => 'nullable|date|after_or_equal:start_date',
             'recurrence.occurrences'          => 'nullable|integer',
             'recurrence.days'                => 'nullable|array',
             'recurrence.days.*'              => 'string|in:monday,tuesday,wednesday,thursday,friday,saturday,sunday',
 
-            'pets_details' => 'nullable|array',
-            'pets_details.*.pet_id' => 'required|integer|exists:pets,id',
-            'pets_details.*.item' => 'required|string|max:255',
-            'pets_details.*.quantity' => 'required|string|max:255',
-            'pets_details.*.notes' => 'nullable|string|max:1000',
+            'pets' => 'nullable|array',
+            'pets.*.pivot.pet_id' => 'required|integer|exists:pets,id',
+            'pets.*.pivot.item' => 'required|string|max:255',
+            'pets.*.pivot.quantity' => 'required|string|max:255',
+            'pets.*.pivot.notes' => 'nullable|string|max:1000',
         ];
     }
 

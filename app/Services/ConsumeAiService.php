@@ -31,7 +31,7 @@ class ConsumeAiService
     {
         $typedResponse = [
             "eventResponse" => $this->getEventStructure(),
-            "petResponse" =>$this->getPetStructure()
+            "petResponse" => $this->getPetStructure()
         ];
 
         $parameters = [
@@ -40,10 +40,10 @@ class ConsumeAiService
             'eventType' => EventType::asArray(),
             'pets' => Pet::pluck( 'name', 'id' )->toArray(),
             'typedResponse' => $typedResponse,
-            'timereference'=>[
-                'morning'=>'08:00:00UTC',
-                'midday'=>'13:00:00UTC',
-                'evening'=>'19:00:00UTC',
+            'timereference' => [
+                'morning' => '08:00:00UTC',
+                'midday' => '13:00:00UTC',
+                'evening' => '19:00:00UTC',
             ]
         ];
 
@@ -61,12 +61,13 @@ class ConsumeAiService
                 ]",
                 "If recurrence is mentioned, set isRecurring to true and populate recurrence details.",
                 "If an animal's name is specified, ensure it appears in the title field if present.",
+                "pets" => "add an array of arrays of pets  for each pets concerned.",
                 "Si un moment de la journee est évoquée choisissez l'heure par rapport parameters.timereference",
                 "response must be a simple object formated by one of the typedResponse structures. ",
                 "respecte le plus possible 'parameters.language' pour la langue de la réponse.",
                 "!!!!! La réponse sera un json brut sans style ou decoration markedown!!!!! "
             ]
-        ]);
+        ] );
     }
 
     /**
@@ -95,12 +96,20 @@ class ConsumeAiService
         return [
             'id' => '',
             'title' => 'value as a string and must contain if possiblme the name of the pet',
-            'petId' => 'value as an array of integers based on parameters.pets',
+            'petId' => 'value as an array of integers based on parameters.pets if type is not medical or feeding',
             'type' => "// Exemple : 'medical' | 'feeding' | 'appointment' | ...'",
             'start_date' => 'value as DateTime',
             'end_date' => 'value as DateTime || null',
             'is_recurring' => 'value as boolean',
             'is_full_day' => 'value as boolean',
+            "pets" => [
+                ["pivot" => [
+                    "pet_id" => 'value as an integer based on parameters.pets',
+                    "item" => "value as a string",
+                    "quantity" => "value as a string",
+                    "notes" => "value as a string || null"
+                ]]
+            ],
             'recurrence' => [
                 'frequency_type' => 'daily',
                 'end_recurrence_date' => 'value as DD-MM-YYYY hh:ii || null',

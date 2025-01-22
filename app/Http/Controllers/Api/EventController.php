@@ -32,11 +32,12 @@ class EventController extends Controller
 
     public function update(EventFormRequest $request, Event $event)
     {
-        return response()->json($this->eventService->update($request->validated(), $event));
+        return response()->json($this->eventService->update( $event->id,$request->validated()));
     }
 
     public function destroy(Event $event)
     {
+        response()->json($this->eventService->delete( $event->id,request()->has('with-recurrence')));
     }
 
     public function getForCalendar()
@@ -45,6 +46,7 @@ class EventController extends Controller
         if(!request()->has('filters')) {
             abort( 400, 'Filters are required' );
         }
+
 
         return $this->eventService->getEventsWithOccurrences(request()->all()['filters']);
     }

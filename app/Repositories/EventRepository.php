@@ -6,6 +6,8 @@ namespace App\Repositories;
 
 use App\Contracts\RepositoryInterface;
 use App\Models\Event;
+use App\Models\EventOccurrence;
+use Carbon\Carbon;
 
 class EventRepository implements RepositoryInterface
 {
@@ -34,7 +36,7 @@ class EventRepository implements RepositoryInterface
     {
         $petIds = \Arr::wrap( \Arr::pull( $data, 'petId' ) );
         $recurrence = \Arr::pull( $data, 'recurrence' );
-        $petsDetails = \Arr::pull( $data, 'pets_details' );
+        $petsDetails = \Arr::pull( $data, 'pets' );
 
         $event = Event::create( $data );
 
@@ -43,19 +45,18 @@ class EventRepository implements RepositoryInterface
         }
 
         foreach ( $petsDetails as $petDetail ) {
-            $formattedPetsDetails[$petDetail['pet_id']] = [
+
+            $formattedPetsDetails[$petDetail['pivot']['pet_id']] = [
                 'detail_type' => $data['type'] == 'medical' ? 'medic' : 'food',
-                'item' => $petDetail['item'],
-                'quantity' => $petDetail['quantity'],
-                'notes' => $petDetail['notes']
+                'item' => $petDetail['pivot']['item'],
+                'quantity' => $petDetail['pivot']['quantity'],
+                'notes' => $petDetail['pivot']['notes']
             ];
         }
 
         if ( isset( $formattedPetsDetails ) ){
-            ray('in if');
             $event->pets()->attach( $formattedPetsDetails );
         } else {
-            ray('in else');
             $event->pets()->attach( $petIds );
         }
 
@@ -74,9 +75,23 @@ class EventRepository implements RepositoryInterface
         return $event;
     }
 
-    public function delete($id)
+    public function delete($id,$withRecurrence)
     {
-        $event = $this->find( $id );
-        $event->delete();
+        ray()->clearScreen();
+        try {
+            $event = $this->find( $id );
+            if ( $withRecurrence || !$event->has( 'recurrence' ) ){
+                $event->delete();
+            } else {
+                ray(request()->date)->orange();
+//                $cleanDateString = str_replace(' ', 'T', request()->date);
+                $date = substr( request()->date, 0,10);
+                ray( $date )->purple();
+                EventOccurrence::updateOrCreate( ['event_id' => $event->id, 'occurrence_date' => $date], ['is_deleted' => true] );
+            }
+            return true;
+        } catch ( \Exception $e ) {
+            throw $e;
+        }
     }
 }

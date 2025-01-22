@@ -31,14 +31,10 @@ class EventService
             // Ajouter les événements simples dans la période
             if ( $event->start_date->between( $startDate, $endDate ) ){
                 $finalEvents->push( $event );
-            } else {
-
-
-                if ( $event->is_recurring && $event->recurrence ){
+            } elseif ($event->is_recurring && $event->recurrence) {
                     $finalEvents = $finalEvents->merge(
                         $this->generateRecurrences( $event, $startDate, $endDate )
                     );
-                }
             }
         }
 
@@ -62,12 +58,10 @@ class EventService
             if ( $currentDate->gt( $endDate ) ){
                 break;
             }
-
             // Check if the recurrence has an end date and if the current date is greater than the recurrence end date or the end date. If true, exit the loop.
             if ( ($recurrence->end_date && $currentDate->gt( Carbon::parse( $recurrence->end_date ) || $currentDate->gt( $endDate ) )) ){
                 break;
             }
-
             // Check if the number of generated occurrences has reached the allowed maximum. If true, exit the loop.
             if ( $recurrence->occurrences && $count >= $recurrence->occurrences ){
                 break;
@@ -143,9 +137,11 @@ class EventService
         return $this->eventRepository->update( $id, $data );
     }
 
-    public function delete($id)
+    public function delete($id,$withRecurrence = false)
     {
-        $this->eventRepository->delete( $id );
+
+
+        $this->eventRepository->delete( $id ,$withRecurrence);
     }
 
     public function changeDoneStatus(array $payload)
