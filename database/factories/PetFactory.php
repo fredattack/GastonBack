@@ -19,7 +19,7 @@ class PetFactory extends Factory
             'breed' => $this->faker->word(),
             'gender' => $this->faker->randomElement(['male','female']),
             'birth_date' => $this->faker->dateTimeBetween('-10years', now()),
-            'is_active' => $this->faker->randomNumber(),
+            'is_active' => $this->faker->boolean(),
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
             'owner_id' => User::factory(),

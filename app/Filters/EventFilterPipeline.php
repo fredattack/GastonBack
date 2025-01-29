@@ -10,12 +10,12 @@ use Illuminate\Pipeline\Pipeline;
 class EventFilterPipeline extends Pipeline
 {
 
-    public function __construct(protected array $filters = []){}
+    public function __construct(protected array $filters = []){
+        parent::__construct(app());
+    }
 
     public function pipes(): array
     {
-        ray($this->filters)->blue();
-
         $availableFilters = [
             'owner_id' => OwnerFilter::class,
             'start_date' => StartDateFilter::class,

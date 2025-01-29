@@ -6,11 +6,10 @@ use Illuminate\Pipeline\Pipeline;
 
 class PetFilterPipeline extends Pipeline
 {
-    protected $filters;
 
-    public function __construct(array $filters = [])
+    public function __construct(protected array $filters = [])
     {
-        $this->filters = $filters;
+        parent::__construct(app());
     }
 
     public function pipes(): array

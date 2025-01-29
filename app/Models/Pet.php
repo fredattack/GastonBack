@@ -4,9 +4,10 @@ namespace App\Models;
 
 use App\Filters\PetFilterPipeline;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
- *
+ * 
  *
  * @property int $id
  * @property string $name
@@ -30,11 +31,19 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Pet whereOwnerId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Pet whereSpecies($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Pet whereUpdatedAt($value)
+ * @property string $gender
+ * @property int $order
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Event> $events
+ * @property-read int|null $events_count
+ * @method static \Database\Factories\PetFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pet whereGender($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pet whereOrder($value)
  * @mixin \Eloquent
  */
 class Pet extends Model
 {
-    public static function filter()
+    use HasFactory;
+    public static function filtered()
     {
         return app(PetFilterPipeline::class, ['filters' => request()->all()['params'] ?? []])
             ->send(self::query())

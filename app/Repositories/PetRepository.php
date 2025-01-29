@@ -9,10 +9,7 @@ class PetRepository implements RepositoryInterface
 {
     public function all()
     {
-        $collection =  Pet::filter()->get();
-
-        return $collection;
-
+        return   Pet::filtered()->get();
     }
 
     public function find($id)
@@ -34,8 +31,11 @@ class PetRepository implements RepositoryInterface
 
     public function delete($id)
     {
-        $pet = Pet::find( $id );
+        $pet = Pet::findOrFail( $id );
         $pet->delete();
+
+        return $pet;
+
 
     }
 }

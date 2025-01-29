@@ -6,8 +6,11 @@ use App\Http\Resources\EventResource;
 use App\Http\Resources\EventResourceCollection;
 use App\Models\Event;
 use App\Models\EventOccurrence;
+use App\Models\Recurrence;
 use App\Repositories\EventRepository;
 use Carbon\Carbon;
+use DB;
+use Exception;
 use Illuminate\Support\Collection;
 
 class EventService
@@ -28,7 +31,7 @@ class EventService
         $finalEvents = collect();
 
         foreach ( $events as $event ) {
-            // Ajouter les événements simples dans la période
+
             if ( $event->start_date->between( $startDate, $endDate ) ){
                 $finalEvents->push( $event );
             } elseif ($event->is_recurring && $event->recurrence) {
@@ -41,9 +44,7 @@ class EventService
         return new EventResourceCollection( $finalEvents->sortBy( 'start_date' ) );
     }
 
-    /**
-     * Génère les occurrences d'un événement récurrent dans une période donnée
-     */
+
     private function generateRecurrences(Event $event, $startDate, $endDate): Collection
     {
         $occurrences = collect();
@@ -58,10 +59,15 @@ class EventService
             if ( $currentDate->gt( $endDate ) ){
                 break;
             }
+
             // Check if the recurrence has an end date and if the current date is greater than the recurrence end date or the end date. If true, exit the loop.
-            if ( ($recurrence->end_date && $currentDate->gt( Carbon::parse( $recurrence->end_date ) || $currentDate->gt( $endDate ) )) ){
+            if (
+                ($recurrence->end_date && $currentDate->gt(Carbon::parse($recurrence->end_date)))
+                || $currentDate->gt($endDate)
+            ) {
                 break;
             }
+
             // Check if the number of generated occurrences has reached the allowed maximum. If true, exit the loop.
             if ( $recurrence->occurrences && $count >= $recurrence->occurrences ){
                 break;
@@ -134,8 +140,47 @@ class EventService
 
     public function update($id, array $data)
     {
-        return $this->eventRepository->update( $id, $data );
+        DB::beginTransaction();
+
+        try {
+            $event = Event::find($id);
+            $targetDate = request()->input('date');
+            $withRecurrences = request()->input('with_recurrences', false);
+            if ($event->is_recurring && $withRecurrences) {
+
+                $event->recurrence()->update([
+                    'end_date' => Carbon::parse($targetDate)->toDateString(),
+                ]);
+
+                $newEvent = $event->create([
+                    ...\Arr::except( $data, Event::EXCEPTED_UPDATE_FIELDS),
+                    'start_date' => Carbon::parse($targetDate)->setTimeFromTimeString($event->start_date->toTimeString()),
+                    ]);
+
+                if (!empty($data['recurrence'])) {
+                    $newEvent->recurrence()->create($data['recurrence']);
+                }
+
+            } elseif ($event->is_recurring && !$withRecurrences) {
+                $this->eventRepository->updateSingleOccurrence($id, $targetDate, [
+                    'custom_title' => $data['title'] ?? $event->title,
+                    'custom_notes' => $data['notes'] ?? $event->notes,
+                    'custom_start_time' => Carbon::parse($data['start_date'])->format('H:i:s'),
+                    'custom_end_time' => Carbon::parse($data['end_date'])->format('H:i:s'),
+                ]);
+            } else {
+                // Mise à jour d'un événement non récurrent
+                $event->update(\Arr::except( $data, EVENT::EXCEPTED_UPDATE_FIELDS));
+            }
+            DB::commit();
+
+            return $event->load(['recurrence', 'pets', 'occurrences']);
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw new Exception("Update failed: " . $e->getMessage());
+        }
     }
+
 
     public function delete($id,$withRecurrence = false)
     {

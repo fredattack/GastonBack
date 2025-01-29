@@ -10,9 +10,7 @@ use Illuminate\Http\Request;
 
 class EventController extends Controller
 {
-    public function __construct(public EventService $eventService){
-
-    }
+    public function __construct(public EventService $eventService){}
 
     public function index()
     {
@@ -32,7 +30,7 @@ class EventController extends Controller
 
     public function update(EventFormRequest $request, Event $event)
     {
-        return response()->json($this->eventService->update( $event->id,$request->validated()));
+        return response()->json($this->eventService->update( $event->id ,$request->validated()));
     }
 
     public function destroy(Event $event)
@@ -42,18 +40,15 @@ class EventController extends Controller
 
     public function getForCalendar()
     {
-
         if(!request()->has('filters')) {
             abort( 400, 'Filters are required' );
         }
-
 
         return $this->eventService->getEventsWithOccurrences(request()->all()['filters']);
     }
 
     public function changeDoneStatus(Request $request)
     {
-        ray()->clearScreen();
         if(!request()->has('id') && !request()->has('master_id')) {
             abort( 400, 'Event ID is required' );
         }
@@ -65,7 +60,6 @@ class EventController extends Controller
             'date'=> 'required|string',
         ]);
 
-        ray($validated)->orange();
         return response()->json($this->eventService->changeDoneStatus($validated));
     }
 }

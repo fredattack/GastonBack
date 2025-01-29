@@ -16,7 +16,6 @@ class PetService {
         return new PetResourceCollection($this->petRepository->all());
     }
 
-    //Generate crud methods here
     public function getById($id) {
         return new PetResource($this->petRepository->find($id));
     }
@@ -25,11 +24,11 @@ class PetService {
         return new PetResource($this->petRepository->create($data));
     }
 
-    public function update($data, $id) {
-        return new PetResource($this->petRepository->update($data, $id));
+    public function update(array $data,int|string $id) {
+        return new PetResource($this->petRepository->update($id,$data, ));
     }
 
     public function delete($id) {
-        $this->petRepository->delete($id);
+      return   $this->petRepository->delete($id);
     }
 }

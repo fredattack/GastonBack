@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -29,10 +30,13 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Recurrence whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Recurrence whereOccurrences($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Recurrence whereUpdatedAt($value)
+ * @property string $frequency_type
+ * @property string|null $end_date
  * @mixin \Eloquent
  */
 class Recurrence extends Model
 {
+    use HasFactory;
     protected $casts = [
         'days' => 'array',
     ];

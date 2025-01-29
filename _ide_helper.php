@@ -22658,6 +22658,28 @@ namespace Illuminate\Support {
     /**
      * 
      *
+     * @template TKey of array-key
+     * @template-covariant TValue
+     * @implements \ArrayAccess<TKey, TValue>
+     * @implements \Illuminate\Support\Enumerable<TKey, TValue>
+     */
+    class Collection {
+        /**
+         * 
+         *
+         * @see \Spatie\LaravelRay\RayServiceProvider::registerMacros()
+         * @param string $description
+         * @static 
+         */
+        public static function ray($description = '')
+        {
+            return \Illuminate\Support\Collection::ray($description);
+        }
+
+            }
+    /**
+     * 
+     *
      */
     class Str {
         /**
@@ -22692,6 +22714,18 @@ namespace Illuminate\Support {
      *
      */
     class Stringable {
+        /**
+         * 
+         *
+         * @see \Spatie\LaravelRay\RayServiceProvider::registerMacros()
+         * @param string $description
+         * @static 
+         */
+        public static function ray($description = '')
+        {
+            return \Illuminate\Support\Stringable::ray($description);
+        }
+
         /**
          * 
          *
@@ -22829,6 +22863,17 @@ namespace Illuminate\Database\Query {
         public static function getSelect()
         {
             return \Illuminate\Database\Query\Builder::getSelect();
+        }
+
+        /**
+         * 
+         *
+         * @see \Spatie\LaravelRay\RayServiceProvider::registerMacros()
+         * @static 
+         */
+        public static function ray()
+        {
+            return \Illuminate\Database\Query\Builder::ray();
         }
 
             }
@@ -23110,6 +23155,28 @@ namespace Illuminate\Database\Eloquent\Relations {
         public static function getPowerJoinExistenceCompareKey()
         {
             return \Illuminate\Database\Eloquent\Relations\Relation::getPowerJoinExistenceCompareKey();
+        }
+
+            }
+    }
+
+namespace Illuminate\Testing {
+    /**
+     * 
+     *
+     * @template TResponse of \Symfony\Component\HttpFoundation\Response
+     * @mixin \Illuminate\Http\Response
+     */
+    class TestResponse {
+        /**
+         * 
+         *
+         * @see \Spatie\LaravelRay\RayServiceProvider::registerMacros()
+         * @static 
+         */
+        public static function ray()
+        {
+            return \Illuminate\Testing\TestResponse::ray();
         }
 
             }
@@ -30931,6 +30998,11 @@ namespace  {
 }
 
 
+namespace Facades\Livewire\Features\SupportFileUploads {
+    /**
+     * @mixin \Livewire\Features\SupportFileUploads\GenerateSignedUploadUrl     */
+    class GenerateSignedUploadUrl extends \Livewire\Features\SupportFileUploads\GenerateSignedUploadUrl {}
+}
 
 
 

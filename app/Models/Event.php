@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Filters\EventFilterPipeline;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -32,10 +33,22 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereUpdatedAt($value)
+ * @property int $is_done
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EventOccurrence> $occurrences
+ * @property-read int|null $occurrences_count
+ * @property-read \App\Models\EventPet|null $pivot
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Pet> $pets
+ * @property-read int|null $pets_count
+ * @method static \Database\Factories\EventFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereIsDone($value)
  * @mixin \Eloquent
  */
 class Event extends Model
 {
+    use HasFactory;
+
+    public const EXCEPTED_UPDATE_FIELDS = ['pet_id', 'petId', 'recurrence', 'pets', 'master_id'];
+
     protected $casts = [
         'is_full_day' => 'boolean',
         'is_recurring' => 'boolean',

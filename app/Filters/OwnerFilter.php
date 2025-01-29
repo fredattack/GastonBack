@@ -2,7 +2,7 @@
 
 
 
-namespace App\Filters\EventFilters;
+namespace App\Filters;
 
     use Illuminate\Database\Eloquent\Builder;
 

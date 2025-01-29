@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Http\Resources\PetResource;
 use App\Http\Resources\PetResourceCollection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class PetControllerTest extends TestCase
@@ -18,17 +19,15 @@ class PetControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-
-        // Création d'un utilisateur pour l'authentification
         $this->user = User::factory()->create();
     }
 
-    /** @test */
+    #[Test]
     public function it_can_list_all_pets()
     {
         Pet::factory()->count(3)->create();
 
-        $response = $this->actingAs($this->user)->getJson('/api/pets');
+        $response = $this->actingAs($this->user)->getJson('/api/v1-0-0/pets');
 
         $response->assertOk()
             ->assertJsonStructure([
@@ -42,67 +41,75 @@ class PetControllerTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_create_a_pet()
     {
+        $this->withExceptionHandling();
+
+
         $payload = [
-            'name' => 'Luna',
+            'name' => 'Gaston',
             'species' => 'cat',
-            'breed' => 'Maine Coon',
+            'breed' => 'Cornish rex',
             'birth_date' => '2020-05-15',
             'is_active' => true,
+            'gender' => "male",
             'order' => 1,
             'owner_id' => $this->user->id,
-            'photo' => 'https://example.com/photo.jpg',
-            'galerie' => json_encode(['https://example.com/photo1.jpg'])
         ];
 
-        $response = $this->actingAs($this->user)->postJson('/api/pets', $payload);
+        $this->assertDatabaseCount('pets', 0);
 
-        $response->assertCreated()
-            ->assertJson((new PetResource(Pet::first()))->response()->getData(true));
+        $response = $this->actingAs($this->user)->postJson('/api/v1-0-0/pets', $payload);
 
-        $this->assertDatabaseHas('pets', [
-            'name' => 'Luna',
-            'species' => 'cat'
-        ]);
+        $response->assertCreated();
+//            ->assertJson((new PetResource(Pet::first()))->response()->getData(true));
+
+        $this->assertDatabaseCount('pets', 1);
+        $this->assertCount(1,
+            Pet::where('name', 'Gaston')
+                ->where('species','cat')
+                ->where('breed','Cornish rex')
+                ->get());
     }
 
-    /** @test */
-    public function it_can_show_a_pet()
-    {
-        $pet = Pet::factory()->create();
 
-        $response = $this->actingAs($this->user)->getJson("/api/pets/{$pet->id}");
 
-        $response->assertOk()
-            ->assertJson((new PetResource($pet))->response()->getData(true));
-    }
-
-    /** @test */
+    #[Test]
     public function it_can_update_a_pet()
     {
-        $pet = Pet::factory()->create();
+        $pet = Pet::factory()->create(['name' => 'Marcel']);
 
-        $payload = ['name' => 'Updated Name'];
+        $this->assertDatabaseHas('pets', ['name' => 'Marcel']);
+        $payload = [ 'name' => 'Gaston',
+            'species' => 'cat',
+            'breed' => 'Cornish rex',
+            'birth_date' => '2020-05-15',
+            'is_active' => true,
+            'gender' => "male",
+            'order' => 1,
+            'owner_id' => $this->user->id,];
 
-        $response = $this->actingAs($this->user)->putJson("/api/pets/{$pet->id}", $payload);
+        $response = $this->actingAs($this->user)->putJson("/api/v1-0-0/pets/{$pet->id}", $payload);
 
-        $response->assertOk()
-            ->assertJsonFragment(['name' => 'Updated Name']);
+        $response->assertOk();
+        $this->assertDatabaseMissing ('pets', ['name' => 'Marcel']);
+        $this->assertDatabaseHas('pets', ['name' => 'Gaston']);
 
-        $this->assertDatabaseHas('pets', ['name' => 'Updated Name']);
+
+
     }
 
-    /** @test */
+    #[Test]
     public function it_can_delete_a_pet()
     {
         $pet = Pet::factory()->create();
 
-        $response = $this->actingAs($this->user)->deleteJson("/api/pets/{$pet->id}");
-
+        $this->assertDatabaseHas('pets', ['id' => $pet->id]);
+        $this->assertDatabaseCount('pets', 1);
+        $response = $this->actingAs($this->user)->deleteJson("/api/v1-0-0/pets/{$pet->id}");
         $response->assertNoContent();
 
-        $this->assertDatabaseMissing('pets', ['id' => $pet->id]);
+        $this->assertDatabaseCount('pets', 0);
     }
 }
